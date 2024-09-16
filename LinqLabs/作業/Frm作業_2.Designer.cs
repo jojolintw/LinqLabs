@@ -57,6 +57,8 @@ namespace MyHomeWork
             this.productPhotoTableAdapter1 = new LinqLabs.DataSet1TableAdapters.ProductPhotoTableAdapter();
             this.productProductPhotoTableAdapter1 = new LinqLabs.DataSet1TableAdapters.ProductProductPhotoTableAdapter();
             this.productTableAdapter1 = new LinqLabs.DataSet1TableAdapters.ProductTableAdapter();
+            this.productSubcategoryTableAdapter1 = new LinqLabs.DataSet1TableAdapters.ProductSubcategoryTableAdapter();
+            this.productCategoryTableAdapter1 = new LinqLabs.DataSet1TableAdapters.ProductCategoryTableAdapter();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -368,6 +370,14 @@ namespace MyHomeWork
             // 
             this.productTableAdapter1.ClearBeforeFill = true;
             // 
+            // productSubcategoryTableAdapter1
+            // 
+            this.productSubcategoryTableAdapter1.ClearBeforeFill = true;
+            // 
+            // productCategoryTableAdapter1
+            // 
+            this.productCategoryTableAdapter1.ClearBeforeFill = true;
+            // 
             // Frm作業_2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -425,5 +435,7 @@ namespace MyHomeWork
         private LinqLabs.DataSet1TableAdapters.ProductPhotoTableAdapter productPhotoTableAdapter1;
         private LinqLabs.DataSet1TableAdapters.ProductProductPhotoTableAdapter productProductPhotoTableAdapter1;
         private LinqLabs.DataSet1TableAdapters.ProductTableAdapter productTableAdapter1;
+        private LinqLabs.DataSet1TableAdapters.ProductSubcategoryTableAdapter productSubcategoryTableAdapter1;
+        private LinqLabs.DataSet1TableAdapters.ProductCategoryTableAdapter productCategoryTableAdapter1;
     }
 }

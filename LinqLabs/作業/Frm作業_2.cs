@@ -28,22 +28,31 @@ namespace MyHomeWork
             this.productPhotoTableAdapter1.Fill(this.dataSet11.ProductPhoto);
             this.productProductPhotoTableAdapter1.Fill(this.dataSet11.ProductProductPhoto);
             this.productTableAdapter1.Fill(this.dataSet11.Product);
+            this.productSubcategoryTableAdapter1.Fill(this.dataSet11.ProductSubcategory); // 填充 ProductSubcategory 資料表
+            this.productCategoryTableAdapter1.Fill(this.dataSet11.ProductCategory); // 填充 ProductCategory 資料表
+
+            // 使用 Field<T> 方法來處理可能為 DBNull 的 ProductSubcategoryID
             var q = from p in this.dataSet11.Product
                     join pp in this.dataSet11.ProductProductPhoto
                     on p.ProductID equals pp.ProductID
                     join pp1 in this.dataSet11.ProductPhoto
                     on pp.ProductPhotoID equals pp1.ProductPhotoID
-                    where !p.IsProductModelIDNull()
+                    join ps in this.dataSet11.ProductSubcategory
+                    on p.Field<int?>("ProductSubcategoryID") equals ps.ProductSubcategoryID // 使用 Field<T> 來處理 DBNull
+                    join pc in this.dataSet11.ProductCategory
+                    on ps.ProductCategoryID equals pc.ProductCategoryID
+                    where pc.ProductCategoryID == 1 && !p.IsProductModelIDNull() // 檢查 ProductModelID 是否為 DBNull
                     select new
-                            {
-                                p.ProductID,
-                                p.Name,
-                                pp1.LargePhoto,
-                                p.ModifiedDate
+                    {
+                        p.ProductID,
+                        p.Name,
+                        pp1.LargePhoto,
+                        p.ModifiedDate
                     };
-            //var q2=from p in q
-            //       where q.
+
+            // 將結果綁定到 DataGridView
             this.dataGridView1.DataSource = q.ToList();
+
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -51,6 +60,9 @@ namespace MyHomeWork
             this.productPhotoTableAdapter1.Fill(this.dataSet11.ProductPhoto);
             this.productProductPhotoTableAdapter1.Fill(this.dataSet11.ProductProductPhoto);
             this.productTableAdapter1.Fill(this.dataSet11.Product);
+            this.productSubcategoryTableAdapter1.Fill(this.dataSet11.ProductSubcategory); // 填充 ProductSubcategory 資料表
+            this.productCategoryTableAdapter1.Fill(this.dataSet11.ProductCategory); // 填充 ProductCategory 資料表
+
             DateTime startDate = dateTimePicker1.Value;
             DateTime endDate = dateTimePicker2.Value;
 
@@ -59,7 +71,11 @@ namespace MyHomeWork
                     on p.ProductID equals pp.ProductID
                     join pp1 in this.dataSet11.ProductPhoto
                     on pp.ProductPhotoID equals pp1.ProductPhotoID
-                    where !p.IsProductModelIDNull() && p.ModifiedDate >= startDate && p.ModifiedDate <= endDate
+                    join ps in this.dataSet11.ProductSubcategory
+                    on p.Field<int?>("ProductSubcategoryID") equals ps.ProductSubcategoryID // 使用 Field<T> 來處理 DBNull
+                    join pc in this.dataSet11.ProductCategory
+                    on ps.ProductCategoryID equals pc.ProductCategoryID
+                    where pc.ProductCategoryID == 1 && !p.IsProductModelIDNull() && p.ModifiedDate >= startDate && p.ModifiedDate <= endDate
                     select new
                     {
                         p.ProductID,
@@ -76,6 +92,8 @@ namespace MyHomeWork
             this.productPhotoTableAdapter1.Fill(this.dataSet11.ProductPhoto);
             this.productProductPhotoTableAdapter1.Fill(this.dataSet11.ProductProductPhoto);
             this.productTableAdapter1.Fill(this.dataSet11.Product);
+            this.productSubcategoryTableAdapter1.Fill(this.dataSet11.ProductSubcategory); // 填充 ProductSubcategory 資料表
+            this.productCategoryTableAdapter1.Fill(this.dataSet11.ProductCategory); // 填充 ProductCategory 資料表
             int selectedYear;
             if (int.TryParse(comboBox3.Text, out selectedYear))
             {
@@ -84,7 +102,11 @@ namespace MyHomeWork
                         on p.ProductID equals pp.ProductID
                         join pp1 in this.dataSet11.ProductPhoto
                         on pp.ProductPhotoID equals pp1.ProductPhotoID
-                        where !p.IsProductModelIDNull() && p.ModifiedDate.Year == selectedYear
+                        join ps in this.dataSet11.ProductSubcategory
+                        on p.Field<int?>("ProductSubcategoryID") equals ps.ProductSubcategoryID // 使用 Field<T> 來處理 DBNull
+                        join pc in this.dataSet11.ProductCategory
+                        on ps.ProductCategoryID equals pc.ProductCategoryID
+                        where pc.ProductCategoryID == 1 && !p.IsProductModelIDNull() && p.ModifiedDate.Year == selectedYear
                         select new
                         {
                             p.ProductID,
@@ -145,7 +167,12 @@ namespace MyHomeWork
                 on p.ProductID equals pp.ProductID
                         join pp1 in this.dataSet11.ProductPhoto
                         on pp.ProductPhotoID equals pp1.ProductPhotoID
-                        where !p.IsProductModelIDNull()
+                        join ps in this.dataSet11.ProductSubcategory
+                        on p.Field<int?>("ProductSubcategoryID") equals ps.ProductSubcategoryID
+                        join pc in this.dataSet11.ProductCategory
+                        on ps.ProductCategoryID equals pc.ProductCategoryID
+
+                        where pc.ProductCategoryID == 1 && !p.IsProductModelIDNull()
                               && p.ModifiedDate >= startDate
                               && p.ModifiedDate <= endDate
                         select new
