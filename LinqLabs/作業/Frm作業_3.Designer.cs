@@ -159,6 +159,7 @@
             this.button9.TabIndex = 149;
             this.button9.Text = "     NW 產品最高單價前 5 筆 (包括類別名稱)";
             this.button9.UseVisualStyleBackColor = false;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // button2
             // 
@@ -184,6 +185,7 @@
             this.button7.TabIndex = 150;
             this.button7.Text = "     NW 產品有任何一筆單價大於300 ?";
             this.button7.UseVisualStyleBackColor = false;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // button8
             // 
@@ -210,6 +212,7 @@
             this.button1.TabIndex = 153;
             this.button1.Text = "銷售最好的top 5業務員";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button15
             // 

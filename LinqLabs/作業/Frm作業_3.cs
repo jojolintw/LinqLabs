@@ -376,8 +376,186 @@ namespace LinqLabs.作業
         }
 
         private void button2_Click(object sender, EventArgs e)
-        {
+            {
+                // 取得 Orders, Order_Details, Products 和 Employees 的資料
+                var orders = dbContext.Orders.ToList();
+                var orderDetails = dbContext.Order_Details.ToList();
+                var products = dbContext.Products.ToList();
+                var employees = dbContext.Employees.ToList();
 
+                // 計算每筆訂單的金額
+                var orderAmounts = from o in orders
+                                   join od in orderDetails on o.OrderID equals od.OrderID
+                                   join p in products on od.ProductID equals p.ProductID
+                                   join emp in employees on o.EmployeeID equals emp.EmployeeID
+                                   group new { o, od, p, emp } by new { emp.LastName, emp.FirstName } into g
+                                   select new
+                                   {
+                                       EmployeeName = g.Key.LastName + " " + g.Key.FirstName, 
+                                       Products = g.Select(x => new
+                                       {
+                                           x.o.OrderID,
+                                           x.p.ProductName,
+                                           Amount = Math.Round((decimal)x.od.UnitPrice * x.od.Quantity * (1 - (decimal)x.od.Discount), 2) // 金額取到小數點2位
+                                       }).ToList(),
+                                       TotalAmount = Math.Round(g.Sum(x => (decimal)x.od.UnitPrice * x.od.Quantity * (1 - (decimal)x.od.Discount)), 2) // 總金額取到小數點2位
+                                   };
+
+                // 將結果綁定到 DataGridView
+                this.dataGridView1.DataSource = orderAmounts.ToList();
+
+                // 清空 TreeView 的節點
+                this.treeView1.Nodes.Clear();
+
+                foreach (var employeeGroup in orderAmounts)
+                {
+                    // 創建 EmployeeName 節點
+                    TreeNode employeeNode = new TreeNode($"Employee: {employeeGroup.EmployeeName}, Total Amount: {employeeGroup.TotalAmount:C}");
+
+                    foreach (var product in employeeGroup.Products)
+                    {
+                        // 將產品資訊添加到 Employee 節點下
+                        employeeNode.Nodes.Add($"Order ID: {product.OrderID}, Product: {product.ProductName}, Amount: {product.Amount:C}");
+                    }
+
+                    // 將 Employee 節點添加到 TreeView
+                    this.treeView1.Nodes.Add(employeeNode);
+                }
+            
+
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // 取得 Orders, Order_Details, Products 和 Employees 的資料
+            var orders = dbContext.Orders.ToList();
+            var orderDetails = dbContext.Order_Details.ToList();
+            var products = dbContext.Products.ToList();
+            var employees = dbContext.Employees.ToList();
+
+            // 計算每筆訂單的金額
+            var orderAmounts = from o in orders
+                               join od in orderDetails on o.OrderID equals od.OrderID
+                               join p in products on od.ProductID equals p.ProductID
+                               join emp in employees on o.EmployeeID equals emp.EmployeeID
+                               group new { o, od, p, emp } by new { emp.LastName, emp.FirstName } into g
+                               select new
+                               {
+                                   EmployeeName = g.Key.LastName + " " + g.Key.FirstName,  // 使用員工的全名
+                                   TotalAmount = Math.Round(g.Sum(x => (decimal)x.od.UnitPrice * x.od.Quantity * (1 - (decimal)x.od.Discount)), 2) // 總金額取到小數點2位
+                               };
+
+            // 將員工按照總金額排序，並取出前5個
+            var top5Employees = orderAmounts
+                                .OrderByDescending(emp => emp.TotalAmount)
+                                .Take(5)
+                                .ToList();
+
+            // 將結果綁定到 DataGridView
+            this.dataGridView1.DataSource = top5Employees;
+
+            // 清空 TreeView 的節點
+            this.treeView1.Nodes.Clear();
+
+            // 在 TreeView 中顯示前5名員工及其總金額
+            foreach (var employee in top5Employees)
+            {
+                // 添加員工及其總金額到 TreeView
+                this.treeView1.Nodes.Add($"Employee: {employee.EmployeeName}, Total Amount: {employee.TotalAmount:C}");
+            }
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            var orders = dbContext.Orders.ToList();
+            var orderDetails = dbContext.Order_Details.ToList();
+            var products = dbContext.Products.ToList();
+            var employees = dbContext.Employees.ToList();
+            var categories = dbContext.Categories.ToList();
+
+            var q = from o in orders
+                    join od in orderDetails on o.OrderID equals od.OrderID
+                    join p in products on od.ProductID equals p.ProductID
+                    join c in categories on p.CategoryID equals c.CategoryID
+                    select new
+                    {
+                        o.OrderID,
+                        o.OrderDate,
+                        p.ProductName,
+                        c.CategoryName,
+                        OrderAmount = Math.Round((decimal)od.UnitPrice * od.Quantity * (1 - (decimal)od.Discount), 2)
+                    };
+            var T5=  q.OrderByDescending(o => o.OrderAmount)
+                     .Take(5)
+                     .ToList();
+            this.dataGridView1.DataSource = T5;
+            this.treeView1.Nodes.Clear();
+            foreach (var order in T5)
+            {
+                TreeNode orderNode = new TreeNode($"Order ID: {order.OrderID}, Amount: {order.OrderAmount:C}, Category: {order.CategoryName}");
+
+                orderNode.Nodes.Add($"Product: {order.ProductName}");
+
+                this.treeView1.Nodes.Add(orderNode);
+            }
+
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            var orders = dbContext.Orders.ToList();
+            var orderDetails = dbContext.Order_Details.ToList();
+            var products = dbContext.Products.ToList();
+            var categories = dbContext.Categories.ToList();
+
+            var orderAmounts = from o in orders
+                               join od in orderDetails on o.OrderID equals od.OrderID
+                               join p in products on od.ProductID equals p.ProductID
+                               join c in categories on p.CategoryID equals c.CategoryID
+                               select new
+                               {
+                                   o.OrderID,
+                                   o.OrderDate,
+                                   p.ProductName,
+                                   c.CategoryName,
+                                   OrderAmount = Math.Round((decimal)od.UnitPrice * od.Quantity * (1 - (decimal)od.Discount), 2) // 計算訂單金額並取到小數點2位
+                               };
+            var ordersAbove300 = orderAmounts
+                         .GroupBy(o => o.OrderID)
+                         .Select(g => new
+                         {
+                             OrderID = g.Key,
+                             OrderDate = g.First().OrderDate, // 取第一筆訂單日期
+                             TotalAmount = g.Sum(o => o.OrderAmount), // 計算同一個 OrderID 的總金額
+                             Products = g.ToList() // 將所有產品放入列表
+                         })
+                         .Where(o => o.TotalAmount > 300) // 只篩選金額大於300的訂單
+                         .OrderByDescending(o => o.TotalAmount) // 以總金額降序排列
+                         .ToList();
+
+            this.dataGridView1.DataSource = ordersAbove300.Select(o => new
+            {
+                o.OrderID,
+                o.OrderDate,
+                TotalAmount = o.TotalAmount.ToString("C") // 格式化金額顯示
+            }).ToList();
+            this.treeView1.Nodes.Clear();
+            foreach (var order in ordersAbove300)
+            {
+                // 創建以 OrderID 分組的節點
+                TreeNode orderNode = new TreeNode($"Order ID: {order.OrderID}, Total Amount: {order.TotalAmount:C}");
+
+                foreach (var product in order.Products)
+                {
+                    // 將產品信息添加到訂單節點下
+                    orderNode.Nodes.Add($"Product: {product.ProductName}, Amount: {product.OrderAmount:C}, Category: {product.CategoryName}");
+                }
+
+                // 將訂單節點添加到 TreeView
+                this.treeView1.Nodes.Add(orderNode);
+            }
         }
     }
 }
